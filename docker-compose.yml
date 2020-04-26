@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  db:
+    image: linuxserver/mariadb
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+      - db_config:/config
+    environment:
+      MYSQL_DATABASE: piwigodb
+    env_file:
+      - db.env
+
+  piwigo:
+    image: linuxserver/piwigo
+    restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Vienna
+    ports:
+      - 8070:80
+    links:
+      - db
+    depends_on:
+      - db
+    volumes:
+      - piwigo_data:/config/www/gallery/_data/i
+      - piwigo_pictures:/pictures
+      - piwigo_config:/config
+
+volumes:
+  db_data:
+  db_config:
+  piwigo_data:
+  piwigo_pictures:
+  piwigo_config:
